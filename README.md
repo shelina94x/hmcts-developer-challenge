@@ -57,34 +57,39 @@ Base URL: `http://localhost:8080`
   "completed": false
 }
 ```
+
+### Swagger API Documentation
+Once the application is running, you can explore and test the API interactively via Swagger UI:
+http://localhost:8080/swagger-ui/index.html
+
 ## Quick curl tests
 
 
-**list tasks**
+**List tasks**
 ```
 curl http://localhost:8080/tasks
 ```
 
-**get one**
+**Get one**
 ```
 curl http://localhost:8080/tasks/1
 ```
 
-**create**
+**Create**
 ```
 curl -X POST http://localhost:8080/tasks \
 -H "Content-Type: application/json" \
 -d '{"title":"Buy milk","completed":false}'
 ```
 
-**update**
+**Update**
 ```
 curl -X PUT http://localhost:8080/tasks/1 \
 -H "Content-Type: application/json" \
 -d '{"title":"Buy bread","completed":true}'
 ```
 
-**delete**
+**Delete**
 ```
 curl -X DELETE http://localhost:8080/tasks/1
 ```
