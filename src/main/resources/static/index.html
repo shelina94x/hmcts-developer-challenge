@@ -1,0 +1,81 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>HMCTS Task Manager</title>
+</head>
+<body>
+<h1>Tasks</h1>
+
+<form id="createForm">
+    <input id="title" placeholder="Title" required />
+    <input id="description" placeholder="Description" />
+    <input id="dueDate" placeholder="YYYY-MM-DDTHH:MM:SS" />
+    <button type="submit">Create Task</button>
+</form>
+
+<button id="refresh">Refresh</button>
+
+<table border="1" id="taskTable">
+    <thead>
+    <tr><th>ID</th><th>Title</th><th>Status</th><th>Actions</th></tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<script>
+    const api = '/tasks';
+
+    async function loadTasks() {
+      const res = await fetch(api);
+      const data = await res.json();
+      const tbody = document.querySelector('#taskTable tbody');
+      tbody.innerHTML = '';
+      data.forEach(t => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${t.id}</td>
+          <td>${t.title}</td>
+          <td>${t.status}</td>
+          <td>
+            <button onclick="markDone(${t.id})">Complete</button>
+            <button onclick="del(${t.id})">Delete</button>
+          </td>`;
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function markDone(id) {
+      await fetch(`${api}/${id}/status`, {
+        method: 'PUT',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify('COMPLETED')
+      });
+      loadTasks();
+    }
+
+    async function del(id) {
+      await fetch(`${api}/${id}`, { method: 'DELETE' });
+      loadTasks();
+    }
+
+    document.getElementById('refresh').onclick = loadTasks;
+
+    document.getElementById('createForm').onsubmit = async (e) => {
+      e.preventDefault();
+      const title = document.getElementById('title').value;
+      const description = document.getElementById('description').value;
+      const dueDate = document.getElementById('dueDate').value || null;
+      await fetch(api, {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ title, description, status:'PENDING', dueDate })
+      });
+      e.target.reset();
+      loadTasks();
+    };
+
+    loadTasks();
+</script>
+</body>
+</html>
